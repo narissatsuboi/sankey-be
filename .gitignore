@@ -1,2 +1,4 @@
 node_modules
 views
+token.json
+credentials.json
