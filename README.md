@@ -1,4 +1,4 @@
-# stankey
+# sankey-be
 
 ### Generate Job Search sankey diagrams with your Google Sheet job tracker
 
