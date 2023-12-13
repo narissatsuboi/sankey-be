@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const path = require('path');
-const { fetchData, nodeFrequencyMap } = require('../gsheetsService');
+const { fetchData, getNodeRows } = require('../gsheetsService');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -20,7 +20,7 @@ router.get('/sankey', function(req, res, next) {
 /* Sheets GET */
 router.get('/sheets', async function (req, res, next) {
   const valueRanges = await fetchData(process.env.SPREADSHEET_ID, ['Sheet1!F2:G66', 'Sheet1!G2:H66', 'Sheet1!H2:I66', 'Sheet1!I2:J66']);
-  const nodeFrequencies = await nodeFrequencyMap(valueRanges);
+  const nodeFrequencies = await getNodeRows(valueRanges);
   console.log(nodeFrequencies);
 })
 

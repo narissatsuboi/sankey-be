@@ -33,19 +33,24 @@ async function batchGet(sheetId, ranges) {
     }
 }
 
-async function nodeFrequencyMap(nodes) {
-    const freqs = {};
+async function getNodeRows(nodes) {
+    const nodeFrequencies = {};
 
     for (const node of nodes) {
         const key = node.join();
 
-        if (freqs[key]) {
-            freqs[key]++;
+        if (nodeFrequencies[key]) {
+            nodeFrequencies[key]++;
         } else {
-            freqs[key] = 1;
+            nodeFrequencies[key] = 1;
         }
     }
-    return freqs;
+
+    const nodeRows = Object.keys(nodeFrequencies).map((key) => {
+        // [['Cold Apply', 'Rejected', 40]...]
+        return [...key.split(','), nodeFrequencies[key]];
+    })
+    return nodeRows;
 }
 exports.fetchData = batchGet;
-exports.nodeFrequencyMap = nodeFrequencyMap;
+exports.getNodeRows = getNodeRows;
