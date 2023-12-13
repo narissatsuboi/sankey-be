@@ -67,9 +67,9 @@ async function listMajors() {
       console.log(`${row[0]}, ${row[4]}`);
     });
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('Error in listMajors:', error);
   }
 }
-
+// authorize().then(listMajors).catch(console.error);
 // Exporting the authorize function
-module.exports = {authorize};
+module.exports = { authorize };

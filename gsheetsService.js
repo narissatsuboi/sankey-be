@@ -1,29 +1,51 @@
-var path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, './.env')});
-const { log } = require('console');
+const path = require('path');
+const { config } = require('dotenv');
 const { authorize } = require('./gapiClient');
 const { google } = require('googleapis');
 
-async function fetchData(sheetId, ranges) {
+config({ path: path.resolve(__dirname, './.env') });
+
+async function batchGet(sheetId, ranges) {
     const auth = await authorize();
     const sheets = google.sheets({ version: 'v4', auth });
+
     try {
         const res = await sheets.spreadsheets.values.batchGet({
-            ranges: ranges,
+            ranges,
             spreadsheetId: sheetId,
             valueRenderOption: 'FORMATTED-VALUE',
         });
-        const rows = res.data.valueRanges;
-        if (!rows || rows.length === 0) {
+
+        const valueRanges = res.data.valueRanges;
+
+        if (!valueRanges || valueRanges.length === 0) {
             console.log('No data found.');
             return;
         }
-        rows.forEach((row) => {
-            console.log(row);
-        });
+
+        const allRows = valueRanges.flatMap(({ values }) => values);
+        const filteredRows = allRows.filter((row) => row.length > 1);
+        return filteredRows;
+
     } catch (error) {
-        console.error('Error:', error.message);
+        console.error('Error in batchGet:', error);
+        throw error;
     }
 }
-const sheetId = process.env.SPREADSHEET_ID;
-fetchData(sheetId, ['Sheet1!F2:G66', 'Sheet1!G2:H66']);
+
+async function nodeFrequencyMap(nodes) {
+    const freqs = {};
+
+    for (const node of nodes) {
+        const key = node.join();
+
+        if (freqs[key]) {
+            freqs[key]++;
+        } else {
+            freqs[key] = 1;
+        }
+    }
+    return freqs;
+}
+exports.fetchData = batchGet;
+exports.nodeFrequencyMap = nodeFrequencyMap;
